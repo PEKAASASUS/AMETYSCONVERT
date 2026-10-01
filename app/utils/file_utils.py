@@ -26,5 +26,9 @@ def output_path(source: Path, out_dir: str, target_ext: str) -> Path:
     return folder / (source.stem + target_ext)
 
 
-def filter_by_ext(paths, ext: str):
-    return [Path(p) for p in paths if str(p).lower().endswith(ext)]
+def filter_by_ext(paths, exts):
+    """Mantém apenas caminhos cuja extensão está em `exts` (uma string ou uma tupla)."""
+    if isinstance(exts, str):
+        exts = (exts,)
+    exts = tuple(e.lower() for e in exts)
+    return [Path(p) for p in paths if str(p).lower().endswith(exts)]

@@ -13,6 +13,9 @@ class Settings:
     profile: str = "Padrão"
     custom_sizes: str = "16, 32, 48, 256"
     on_exists: str = "Criar novo nome"  # | Sobrescrever | Pular
+    target_format: str = "ICO"    # formato de saída selecionado por último
+    quality: int = 90             # qualidade para JPG/JPEG/WEBP
+    open_after: bool = False      # abrir a pasta de saída ao concluir
 
     @classmethod
     def load(cls):

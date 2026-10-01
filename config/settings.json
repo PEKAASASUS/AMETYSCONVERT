@@ -1,6 +1,9 @@
 {
-  "output_dir": "D:/Ametista",
+  "output_dir": "C:/Users/joaoc/Documents",
   "profile": "Ícone grande",
   "custom_sizes": "16, 32, 48, 256",
-  "on_exists": "Criar novo nome"
+  "on_exists": "Sobrescrever",
+  "target_format": "ICO",
+  "quality": 90,
+  "open_after": false
 }
