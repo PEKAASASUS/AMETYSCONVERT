@@ -17,7 +17,7 @@ def rounded_rect(canvas: tk.Canvas, x1, y1, x2, y2, radius=16, **kwargs):
 class DropZone(tk.Canvas):
     """Área de arrastar/soltar com cantos arredondados e destaque ao passar o mouse."""
 
-    def __init__(self, master, on_click, has_dnd, height=110):
+    def __init__(self, master, on_click, has_dnd, height=75):
         super().__init__(master, bg=theme.BG, highlightthickness=0, height=height)
         self.on_click = on_click
         self._hover = False

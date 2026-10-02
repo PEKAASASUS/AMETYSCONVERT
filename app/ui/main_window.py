@@ -39,14 +39,28 @@ class MainWindow(_Base):
         self.events = queue.Queue()
 
         self.title("Ametista")
-        self.geometry("760x680")
-        self.minsize(660, 560)
+       
+        self.geometry("1000x750")
+        self.minsize(900, 620)
+        self.resizable(True, True)
         theme.apply(self)
         self._logo_img = self._load_image(app_dir() / "assets" / "icons" / "ametista.png", (40, 40))
         self._blank_thumb = self._load_image(app_dir() / "assets" / "icons" / "generic_image.png", (34, 34))
         self._set_window_icon()
         self._build()
         self.protocol("WM_DELETE_WINDOW", self._close)
+        self.update_idletasks()
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        window_width = self.winfo_width()
+        window_height = self.winfo_height()
+
+        x = max((screen_width - window_width) // 2, 0)
+        y = max((screen_height - window_height) // 2, 0)
+
+        self.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
     # ---------- utilidades de imagem ----------
     @staticmethod
@@ -97,31 +111,58 @@ class MainWindow(_Base):
 
     def _build_files_card(self, pad):
         card = theme.card(self)
-        card.pack(fill="both", expand=True, pady=(0, 12), **pad)
+        card.pack(fill="both", expand=False, pady=(0, 12), **pad)
 
         head = ttk.Frame(card, style="Panel.TFrame")
         head.pack(fill="x", padx=16, pady=(12, 6))
-        self.files_title = ttk.Label(head, text="Nenhuma imagem selecionada", style="Muted.TLabel")
+
+        self.files_title = ttk.Label(
+            head,
+            text="Nenhuma imagem selecionada",
+            style="Muted.TLabel"
+        )
         self.files_title.pack(side="left")
-        ttk.Button(head, text="Limpar tudo", style="Link.TButton", command=self._clear).pack(side="right")
-        ttk.Button(head, text="Remover selecionadas", style="Link.TButton",
-                  command=self._remove).pack(side="right", padx=(0, 4))
+
+        ttk.Button(
+            head,
+            text="Limpar tudo",
+            style="Link.TButton",
+            command=self._clear
+        ).pack(side="right")
+
+        ttk.Button(
+            head,
+            text="Remover selecionadas",
+            style="Link.TButton",
+            command=self._remove
+        ).pack(side="right", padx=(0, 4))
 
         wrap = ttk.Frame(card, style="Panel.TFrame")
         wrap.pack(fill="both", expand=True, padx=16, pady=(0, 14))
-        self.tree = ttk.Treeview(wrap, columns=("info", "status"), show="tree headings",
-                                 selectmode="extended", height=8)
+
+        self.tree = ttk.Treeview(
+            wrap,
+            columns=("info", "status"),
+            show="tree headings",
+            selectmode="extended",
+            height=3
+        )
+
         self.tree.heading("#0", text="Arquivo", anchor="w")
         self.tree.heading("info", text="Formato", anchor="w")
         self.tree.heading("status", text="Resultado", anchor="w")
+
         self.tree.column("#0", width=260, anchor="w")
         self.tree.column("info", width=140, anchor="w")
         self.tree.column("status", width=220, anchor="w")
+
         self.tree.tag_configure("ok", foreground=theme.OK)
         self.tree.tag_configure("warn", foreground=theme.WARN)
         self.tree.tag_configure("err", foreground=theme.ERR)
+
         sb = ttk.Scrollbar(wrap, command=self.tree.yview)
         self.tree.configure(yscrollcommand=sb.set)
+
         sb.pack(side="right", fill="y")
         self.tree.pack(fill="both", expand=True)
 
