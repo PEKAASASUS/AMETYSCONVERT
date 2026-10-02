@@ -172,7 +172,7 @@ class MainWindow(_Base):
 
         row1 = ttk.Frame(card, style="Panel.TFrame")
         row1.pack(fill="x", padx=16, pady=(14, 6))
-        self.from_label = ttk.Label(row1, text="Adicione imagens para comecar", style="Muted.TLabel")
+        self.from_label = ttk.Label(row1,text="Adicione imagens para começar",style="Muted.TLabel")
         self.from_label.pack(side="left")
         ttk.Label(row1, text="Converter para", style="Muted.TLabel").pack(side="right", padx=(0, 8))
         self.target = ttk.Combobox(row1, state="readonly", values=OUTPUT_LABELS, width=9)
@@ -185,7 +185,7 @@ class MainWindow(_Base):
 
         row3 = ttk.Frame(card, style="Panel.TFrame")
         row3.pack(fill="x", padx=16, pady=(2, 14))
-        ttk.Label(row3, text="Se ja existir", style="Muted.TLabel").pack(side="left")
+        ttk.Label(row3,text="Se o arquivo já existir",style="Muted.TLabel").pack(side="left")
         self.exists = ttk.Combobox(row3, state="readonly", values=EXISTS_POLICIES, width=16)
         self.exists.set(self.settings.on_exists if self.settings.on_exists in EXISTS_POLICIES else EXISTS_POLICIES[0])
         self.exists.pack(side="left", padx=12)
@@ -196,9 +196,11 @@ class MainWindow(_Base):
 
         row = ttk.Frame(card, style="Panel.TFrame")
         row.pack(fill="x", padx=16, pady=(14, 6))
-        ttk.Label(row, text="\U0001F4C1 Pasta de saida", style="Muted.TLabel").pack(side="left")
+        ttk.Label(row, text="\U0001F4C1 Pasta de saída", style="Muted.TLabel").pack(side="left")
         ttk.Button(row, text="Escolher pasta...", command=self._choose_out).pack(side="right")
-        ttk.Button(row, text="Original", command=lambda: self._set_out("")).pack(side="right", padx=(0, 6))
+        ttk.Button(row,text="Pasta original",command=lambda: self._set_out(""))
+
+
 
         path_row = ttk.Frame(card, style="Panel.TFrame")
         path_row.pack(fill="x", padx=16, pady=(0, 6))
@@ -210,7 +212,7 @@ class MainWindow(_Base):
         chk_row = ttk.Frame(card, style="Panel.TFrame")
         chk_row.pack(fill="x", padx=16, pady=(0, 14))
         self.open_after = tk.BooleanVar(value=self.settings.open_after)
-        ttk.Checkbutton(chk_row, text="Abrir pasta apos a conversao",
+        ttk.Checkbutton(chk_row, text="Abrir pasta após a conversão",
                         variable=self.open_after, style="TCheckbutton").pack(side="left")
 
     def _build_footer(self, pad):
@@ -220,7 +222,7 @@ class MainWindow(_Base):
         self.progress.pack(fill="x", pady=(0, 8))
         row = ttk.Frame(foot)
         row.pack(fill="x")
-        self.status = tk.StringVar(value="Selecione imagens para comecar.")
+        self.status = tk.StringVar(value="Selecione imagens para começar.")
         ttk.Label(row, textvariable=self.status, style="Muted.TLabel").pack(side="left")
         self.go = ttk.Button(row, text="\u2726 CONVERTER IMAGENS", style="Accent.TButton", command=self._start)
         self.go.pack(side="right")
@@ -236,7 +238,7 @@ class MainWindow(_Base):
             self.quality_var = tk.DoubleVar(value=self.settings.quality)
             QualityControl(self.dynamic, self.quality_var).pack(fill="x")
         else:
-            ttk.Label(self.dynamic, text="Este formato nao tem opcoes adicionais.",
+            ttk.Label(self.dynamic, text="Este formato não possui opções adicionais.",
                      style="Muted.TLabel").pack(anchor="w")
         self._refresh_from_label()
 
@@ -259,7 +261,7 @@ class MainWindow(_Base):
         custom = self.profile.get() == CUSTOM
         self.custom_entry.configure(state="normal" if custom else "disabled")
         if custom:
-            self.sizes_info.configure(text=f"Tamanhos separados por virgula: {', '.join(map(str, ALL_SIZES))}")
+            self.sizes_info.configure(text=f"Tamanhos separados por vírgula: {', '.join(map(str, ALL_SIZES))}")
         else:
             self.sizes_info.configure(text="Tamanhos: " + ", ".join(map(str, PROFILES[self.profile.get()])))
 
@@ -410,14 +412,14 @@ class MainWindow(_Base):
         if warn:
             parts.append(f"{warn} com aviso")
         parts.append(f"{err} com erro")
-        self.status.set("Concluido: " + ", ".join(parts) + ".")
+        self.status.set("Concluído: " + ", ".join(parts) + ".")
         self.go.state(["!disabled"])
         if self.open_after.get() and ok:
             self._open_output_folder()
         if err:
             messagebox.showwarning("Ametista", f"{ok} convertido(s) e {err} com erro.\nVeja os detalhes na lista.")
         else:
-            messagebox.showinfo("Ametista", f"Conversao concluida: {ok} arquivo(s).")
+            messagebox.showinfo("Ametista", f"Conversão concluída: {ok} arquivo(s).")
 
     def _open_output_folder(self):
         folder = Path(self.out_var.get()) if self.out_var.get() else (self.files[0].parent if self.files else None)

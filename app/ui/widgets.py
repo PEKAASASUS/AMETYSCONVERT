@@ -40,7 +40,7 @@ class DropZone(tk.Canvas):
         fill = theme.SURFACE if self._hover else theme.PANEL
         rounded_rect(self, 3, 3, w - 3, h - 3, 18, outline=border, width=2,
                      dash=(6, 4), fill=fill)
-        self.create_text(w / 2, h / 2 - 13, text="🖼  " + self._hint + "clique para adicionar",
+        self.create_text(w / 2, h / 2 - 13, text="🖼  " + self._hint + "clique para adicionar imagens",
                           fill=theme.TEXT, font=("Segoe UI Semibold", 11))
         self.create_text(w / 2, h / 2 + 12,
                           text="PNG  ·  JPG  ·  JPEG  ·  WEBP  ·  BMP  ·  GIF  ·  TIFF  ·  ICO",
