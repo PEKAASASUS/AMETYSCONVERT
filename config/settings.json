@@ -1,7 +1,7 @@
 {
-  "output_dir": "C:/Users/joaoc/Documents",
-  "profile": "Ícone grande",
-  "custom_sizes": "16, 32, 48, 256",
+  "output_dir": "C:/Users/DESKTOP1/Documents",
+  "profile": "Padrão",
+  "custom_sizes": "16",
   "on_exists": "Sobrescrever",
   "target_format": "ICO",
   "quality": 90,

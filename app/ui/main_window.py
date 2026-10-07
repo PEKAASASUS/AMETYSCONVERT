@@ -171,13 +171,31 @@ class MainWindow(_Base):
         card.pack(fill="x", pady=(0, 12), **pad)
 
         row1 = ttk.Frame(card, style="Panel.TFrame")
-        row1.pack(fill="x", padx=16, pady=(14, 6))
-        self.from_label = ttk.Label(row1,text="Adicione imagens para começar",style="Muted.TLabel")
+        row1.pack(fill="x", padx=16, pady=(14, 8))
+
+        self.from_label = ttk.Label(
+            row1,
+            text="Adicione imagens para começar",
+            style="Muted.TLabel"
+        )
         self.from_label.pack(side="left")
-        ttk.Label(row1, text="Converter para", style="Muted.TLabel").pack(side="right", padx=(0, 8))
-        self.target = ttk.Combobox(row1, state="readonly", values=OUTPUT_LABELS, width=9)
-        self.target.set(self.settings.target_format if self.settings.target_format in OUTPUT_LABELS else "PNG")
-        self.target.pack(side="right")
+
+        target_wrap = ttk.Frame(row1, style="Panel.TFrame")
+        target_wrap.pack(side="right")
+
+        ttk.Label(
+            target_wrap,
+            text="Converter para",
+            style="Muted.TLabel"
+        ).pack(side="left", padx=(0, 8))
+
+        self.target = ttk.Combobox(
+            target_wrap,
+            state="readonly",
+            values=OUTPUT_LABELS,
+            width=9
+        )
+        self.target.pack(side="left")
         self.target.bind("<<ComboboxSelected>>", lambda e: self._sync_target())
 
         self.dynamic = ttk.Frame(card, style="Panel.TFrame")
@@ -198,7 +216,7 @@ class MainWindow(_Base):
         row.pack(fill="x", padx=16, pady=(14, 6))
         ttk.Label(row, text="\U0001F4C1 Pasta de saída", style="Muted.TLabel").pack(side="left")
         ttk.Button(row, text="Escolher pasta...", command=self._choose_out).pack(side="right")
-        ttk.Button(row,text="Pasta original",command=lambda: self._set_out(""))
+        ttk.Button(row,text="Pasta original",command=lambda: self._set_out("")).pack(side="right", padx=(0, 6))
 
 
 
@@ -231,39 +249,151 @@ class MainWindow(_Base):
     def _sync_target(self):
         for w in self.dynamic.winfo_children():
             w.destroy()
+
         target = self.target.get()
+
         if target == "ICO":
             self._build_ico_options(self.dynamic)
+
         elif target in QUALITY_FORMATS:
             self.quality_var = tk.DoubleVar(value=self.settings.quality)
             QualityControl(self.dynamic, self.quality_var).pack(fill="x")
+
         else:
-            ttk.Label(self.dynamic, text="Este formato não possui opções adicionais.",
-                     style="Muted.TLabel").pack(anchor="w")
+            ttk.Label(
+                self.dynamic,
+                text="Este formato não possui opções adicionais.",
+                style="Muted.TLabel"
+            ).pack(anchor="w")
+
         self._refresh_from_label()
 
+        # Recalcula o tamanho necessário após as opções dinâmicas mudarem.
+        self.update_idletasks()
+
+        current_width = self.winfo_width()
+        required_height = self.winfo_reqheight()
+        min_width, min_height = 900, 620
+
+        new_height = max(min_height, required_height)
+
+        self.geometry(
+            f"{current_width}x{new_height}"
+        )
+
     def _build_ico_options(self, parent):
-        row = ttk.Frame(parent, style="Panel.TFrame")
-        row.pack(fill="x")
-        ttk.Label(row, text="Perfil", style="Muted.TLabel").pack(side="left")
-        self.profile = ttk.Combobox(row, state="readonly", values=[*PROFILES, CUSTOM], width=15)
-        self.profile.set(self.settings.profile if self.settings.profile in [*PROFILES, CUSTOM] else "Padrão")
-        self.profile.pack(side="left", padx=12)
-        self.profile.bind("<<ComboboxSelected>>", lambda e: self._sync_profile())
-        self.custom = tk.StringVar(value=self.settings.custom_sizes)
-        self.custom_entry = ttk.Entry(row, textvariable=self.custom, width=22)
-        self.custom_entry.pack(side="left")
-        self.sizes_info = ttk.Label(parent, style="Muted.TLabel")
-        self.sizes_info.pack(anchor="w", pady=(4, 0))
+        # Perfil
+        profile_row = ttk.Frame(parent, style="Panel.TFrame")
+        profile_row.pack(fill="x", pady=(0, 6))
+
+        ttk.Label(
+            profile_row,
+            text="Perfil",
+            style="Muted.TLabel"
+        ).pack(side="left")
+
+        self.profile = ttk.Combobox(
+            profile_row,
+            state="readonly",
+            values=[*PROFILES, CUSTOM],
+            width=15
+        )
+
+        self.profile.set(
+            self.settings.profile
+            if self.settings.profile in [*PROFILES, CUSTOM]
+            else "Padrão"
+        )
+
+        self.profile.pack(side="left", padx=(12, 0))
+        self.profile.bind(
+            "<<ComboboxSelected>>",
+            lambda e: self._sync_profile()
+        )
+
+        # Linha dos tamanhos personalizados
+        self.custom_row = ttk.Frame(
+            parent,
+            style="Panel.TFrame"
+        )
+
+        ttk.Label(
+            self.custom_row,
+            text="Tamanhos personalizados",
+            style="Muted.TLabel"
+        ).pack(side="left")
+
+        self.custom = tk.StringVar(
+            value=self.settings.custom_sizes
+        )
+
+        self.custom_entry = ttk.Entry(
+            self.custom_row,
+            textvariable=self.custom,
+            width=22
+        )
+
+        self.custom_entry.pack(
+            side="left",
+            padx=(12, 0)
+        )
+
+        # Informação dos tamanhos
+        self.sizes_info = ttk.Label(
+            parent,
+            style="Muted.TLabel"
+        )
+
+        self.sizes_info.pack(
+            anchor="w",
+            pady=(2, 0)
+        )
+
         self._sync_profile()
 
     def _sync_profile(self):
         custom = self.profile.get() == CUSTOM
-        self.custom_entry.configure(state="normal" if custom else "disabled")
+
         if custom:
-            self.sizes_info.configure(text=f"Tamanhos separados por vírgula: {', '.join(map(str, ALL_SIZES))}")
+            # Mostra a linha de tamanhos personalizados.
+            if not self.custom_row.winfo_ismapped():
+                self.custom_row.pack(
+                    fill="x",
+                    pady=(0, 2),
+                    before=self.sizes_info
+                )
+
+            self.custom_entry.configure(state="normal")
+
+            self.sizes_info.configure(
+                text=f"Tamanhos disponíveis: "
+                    f"{', '.join(map(str, ALL_SIZES))}"
+            )
+
         else:
-            self.sizes_info.configure(text="Tamanhos: " + ", ".join(map(str, PROFILES[self.profile.get()])))
+            # Remove a linha personalizada da interface.
+            if self.custom_row.winfo_ismapped():
+                self.custom_row.pack_forget()
+
+            self.sizes_info.configure(
+                text="Disponíveis: " +
+                    ", ".join(
+                        map(str, PROFILES[self.profile.get()])
+                    )
+            )
+
+        # Atualiza o tamanho necessário da janela.
+        self.update_idletasks()
+
+        current_width = self.winfo_width()
+        required_height = self.winfo_reqheight()
+        min_height = 620
+
+        new_height = max(min_height, required_height)
+
+        self.geometry(
+            f"{current_width}x{new_height}"
+        )
 
     def _sizes(self):
         if self.profile.get() != CUSTOM:
